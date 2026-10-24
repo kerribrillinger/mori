@@ -1,25 +1,52 @@
+import { useRef, useEffect } from 'react';
+import { BackHandler, SafeAreaView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Speech from 'expo-speech';
 import html from './mori-html';
 
-// the web page sends text here when a ▶ button is tapped; the phone's speech engine reads it aloud
-const onMessage = event => {
-  try {
-    const { text, lang } = JSON.parse(event.nativeEvent.data);
-    Speech.stop();
-    Speech.speak(text, { language: lang, rate: 0.85 });
-  } catch {}
-};
+// a fixed base URL gives the page a normal origin, so localStorage (bookmarks, language, theme) is kept
+const BASE_URL = 'https://mori.local';
 
-// Mori runs entirely inside this WebView, so it works offline with no server.
 export default function App() {
+  const webRef = useRef(null);
+
+  // Android back button: go back inside the app first, then leave it
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (webRef.current) {
+        webRef.current.goBack();
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, []);
+
+  // the web page sends text here when a play button is tapped
+  const onMessage = async event => {
+    try {
+      const { text, lang } = JSON.parse(event.nativeEvent.data);
+      const voices = await Speech.getAvailableVoicesAsync();
+      const hasVoice = voices.some(v => v.language && v.language.startsWith(lang.slice(0, 2)));
+      if (!hasVoice) {
+        const name = lang === 'ko-KR' ? 'Korean' : 'Japanese';
+        webRef.current?.injectJavaScript(
+          `document.getElementById('note').textContent = 'no ${name} voice on this phone. install it in Settings > Languages > Text-to-speech.'; true;`
+        );
+        return;
+      }
+      Speech.stop();
+      Speech.speak(text, { language: lang, rate: 0.85 });
+    } catch {}
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <WebView
-        source={{ html }}
+        ref={webRef}
+        source={{ html, baseUrl: BASE_URL }}
         originWhitelist={['*']}
         javaScriptEnabled
         domStorageEnabled
