@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { BackHandler, Platform, SafeAreaView, StatusBar as RNStatusBar, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
@@ -10,18 +10,19 @@ const BASE_URL = 'https://mori.local';
 
 export default function App() {
   const webRef = useRef(null);
+  const [canGoBack, setCanGoBack] = useState(false);
 
-  // Android back button: go back inside the app first, then leave it
+  // Android back button: go back inside the app first; on the first page, let Android close the app
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (webRef.current) {
+      if (canGoBack && webRef.current) {
         webRef.current.goBack();
         return true;
       }
       return false;
     });
     return () => sub.remove();
-  }, []);
+  }, [canGoBack]);
 
   // the web page sends text here when a play button is tapped
   const onMessage = async event => {
@@ -52,6 +53,7 @@ export default function App() {
         javaScriptEnabled
         domStorageEnabled
         onMessage={onMessage}
+        onNavigationStateChange={nav => setCanGoBack(nav.canGoBack)}
         style={styles.web}
       />
     </SafeAreaView>
