@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { BackHandler, SafeAreaView, StyleSheet } from 'react-native';
+import { BackHandler, Platform, SafeAreaView, StatusBar as RNStatusBar, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
 import * as Speech from 'expo-speech';
@@ -42,7 +42,8 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    // Android draws the app under the status bar, so reserve that space at the top
+    <SafeAreaView style={[styles.container, Platform.OS === 'android' && { paddingTop: RNStatusBar.currentHeight || 24 }]}>
       <StatusBar style="dark" />
       <WebView
         ref={webRef}
