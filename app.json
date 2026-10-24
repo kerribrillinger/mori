@@ -9,8 +9,8 @@
     "android": {
       "package": "com.kerribrillinger.mori",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#F3EFE8"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#EFEBE4"
       }
     },
     "extra": {
