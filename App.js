@@ -43,7 +43,7 @@ export default function App() {
 
   return (
     // Android draws the app under the status bar, so reserve that space at the top
-    <SafeAreaView style={[styles.container, Platform.OS === 'android' && { paddingTop: RNStatusBar.currentHeight || 24 }]}>
+    <SafeAreaView style={[styles.container, Platform.OS === 'android' && { paddingTop: (RNStatusBar.currentHeight || 24) + 15 }]}>
       <StatusBar style="dark" />
       <WebView
         ref={webRef}
