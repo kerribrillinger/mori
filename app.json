@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Mori",
+    "slug": "mori",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.kerribrillinger.mori",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#F3EFE8"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "350ca61e-9127-4af2-820a-f5d99772cbcb"
+      }
+    },
+    "owner": "kerribrillinger"
+  }
+}
